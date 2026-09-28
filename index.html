@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Até a Kau voltar</title>
+<meta name="theme-color" content="#FFF5F3">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1: #FFF5F3;
+    --bg2: #F8DCE3;
+    --ink: #4A1F33;
+    --rose: #C2416B;
+    --pale: #F2CCD7;
+    --gold: #E0A458;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%) fixed;
+    color: var(--ink);
+    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-size: 1.15rem;
+    line-height: 1.55;
+  }
+  main { max-width: 820px; margin: 0 auto; padding: 56px 20px 64px; text-align: center; }
+  h1 { font-size: clamp(1.5rem, 5vw, 2.1rem); font-weight: 600; font-style: italic; margin: 0 0 12px; }
+  .days {
+    font-size: clamp(8rem, 36vw, 16rem);
+    font-weight: 700;
+    font-style: italic;
+    line-height: .85;
+    color: var(--rose);
+    margin: 0;
+    font-variant-numeric: lining-nums tabular-nums;
+    text-shadow: 0 6px 28px rgba(194,65,107,.22);
+  }
+  .days-label { font-size: clamp(1.5rem, 5vw, 2.2rem); font-style: italic; margin: 6px 0 0; }
+  .clock { display: flex; justify-content: center; gap: 32px; margin: 28px 0 8px; font-variant-numeric: lining-nums tabular-nums; }
+  .clock div { display: flex; flex-direction: column; }
+  .clock b { font-size: 2.2rem; font-weight: 600; line-height: 1.1; }
+  .clock span { font-size: 1rem; font-style: italic; opacity: .75; }
+  .love { font-size: 1.35rem; font-style: italic; margin: 28px auto 0; max-width: 34ch; }
+  .status { margin: 14px auto 0; font-size: 1.05rem; max-width: 52ch; opacity: .8; }
+  .grid-wrap { margin-top: 48px; }
+  .grid-wrap h2 { font-size: 1.6rem; font-style: italic; font-weight: 600; margin: 0 0 4px; }
+  .grid-wrap p { margin: 0 auto 18px; font-size: 1.05rem; opacity: .8; max-width: 52ch; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(24px, 1fr)); gap: 4px; }
+  .t, .legend i {
+    aspect-ratio: 1;
+    background: var(--pale);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.5 3.2 12.7a5.6 5.6 0 0 1 7.9-7.9l.9.9.9-.9a5.6 5.6 0 0 1 7.9 7.9z'/%3E%3C/svg%3E") center / contain no-repeat;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.5 3.2 12.7a5.6 5.6 0 0 1 7.9-7.9l.9.9.9-.9a5.6 5.6 0 0 1 7.9 7.9z'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  .t.done { background: var(--rose); }
+  .t.today { background: var(--gold); animation: beat 1.6s ease-in-out infinite; }
+  .t:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+  .legend { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 16px; font-size: 1rem; font-style: italic; }
+  .legend i { display: inline-block; width: 16px; height: 16px; margin-right: 6px; vertical-align: -3px; }
+  .legend .l-done { background: var(--rose); }
+  .legend .l-today { background: var(--gold); }
+  .bar { height: 8px; background: var(--pale); border-radius: 4px; overflow: hidden; margin: 40px auto 0; max-width: 560px; }
+  .bar div { height: 100%; width: 0; background: var(--rose); transition: width .6s ease; }
+  .pct { font-size: 1.05rem; font-style: italic; margin: 8px 0 0; }
+  @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+  @media (prefers-reduced-motion: reduce) {
+    .t.today { animation: none; }
+    .bar div { transition: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Contando os dias para te abraçar</h1>
+  <p class="days" id="days" aria-live="polite">0</p>
+  <p class="days-label" id="daysLabel">dias</p>
+
+  <p class="love">Cada dia longe é um dia mais perto do abraço.</p>
+
+  <div class="clock" aria-hidden="true">
+    <div><b id="h">00</b><span>horas</span></div>
+    <div><b id="m">00</b><span>minutos</span></div>
+    <div><b id="s">00</b><span>segundos</span></div>
+  </div>
+
+  <p class="status" id="status"></p>
+
+  <div class="bar" role="progressbar" aria-label="Progresso da viagem" aria-valuemin="0" aria-valuemax="100" id="bar"><div id="fill"></div></div>
+  <p class="pct" id="pct"></p>
+
+  <section class="grid-wrap">
+    <h2>Um coração por dia</h2>
+    <p>Cada coração é um dia da viagem. Passou um dia, pinta mais um de rosa.</p>
+    <div class="tiles" id="tiles"></div>
+    <div class="legend">
+      <span><i class="l-done"></i>já passou</span>
+      <span><i class="l-today"></i>hoje</span>
+      <span><i></i>falta</span>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Datas da viagem (horário de Brasília). Para mudar, edite aqui.
+  const IDA    = new Date('2026-10-13T00:00:00-03:00');
+  const VOLTA  = new Date('2027-05-22T00:00:00-03:00');
+  const DAY = 864e5;
+
+  const total = Math.round((VOLTA - IDA) / DAY);
+  const $ = id => document.getElementById(id);
+  const fmt = d => d.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Sao_Paulo' });
+  const pad = n => String(n).padStart(2, '0');
+  const plural = (n, s, p) => n === 1 ? s : p;
+
+  // Monta os azulejos
+  const tilesEl = $('tiles');
+  const tiles = [];
+  for (let i = 0; i < total; i++) {
+    const t = document.createElement('div');
+    t.className = 't';
+    t.tabIndex = 0;
+    const label = 'Dia ' + (i + 1) + ' — ' + fmt(new Date(+IDA + i * DAY));
+    t.title = label;
+    t.setAttribute('aria-label', label);
+    tilesEl.appendChild(t);
+    tiles.push(t);
+  }
+
+  let lastDay = -1;
+  function tick() {
+    const now = new Date();
+    const left = VOLTA - now;
+
+    if (left <= 0) {
+      $('days').textContent = '0';
+      $('daysLabel').textContent = 'A Kau voltou! ❤️';
+      $('h').textContent = $('m').textContent = $('s').textContent = '00';
+      $('status').textContent = 'Fim da contagem: ela voltou dia ' + fmt(VOLTA) + '.';
+      $('fill').style.width = '100%';
+      $('pct').textContent = '100% da viagem concluída';
+      tiles.forEach(t => { t.className = 't done'; });
+      return;
+    }
+
+    const d = Math.floor(left / DAY);
+    const h = Math.floor(left % DAY / 36e5);
+    const m = Math.floor(left % 36e5 / 6e4);
+    const s = Math.floor(left % 6e4 / 1e3);
+    $('days').textContent = d;
+    $('daysLabel').textContent = plural(d, 'dia', 'dias') + ' para ela voltar';
+    $('h').textContent = pad(h);
+    $('m').textContent = pad(m);
+    $('s').textContent = pad(s);
+
+    const elapsed = now - IDA;
+    if (elapsed < 0) {
+      const before = Math.ceil(-elapsed / DAY);
+      $('status').textContent = 'Ela viaja dia ' + fmt(IDA) + ' (em ' + before + ' ' + plural(before, 'dia', 'dias') + ') e volta dia ' + fmt(VOLTA) + '.';
+      $('fill').style.width = '0%';
+      $('pct').textContent = 'A viagem ainda não começou';
+      $('bar').setAttribute('aria-valuenow', 0);
+    } else {
+      const pct = Math.min(100, elapsed / (VOLTA - IDA) * 100);
+      $('status').textContent = 'Ela foi dia ' + fmt(IDA) + ' e volta dia ' + fmt(VOLTA) + '.';
+      $('fill').style.width = pct.toFixed(1) + '%';
+      $('pct').textContent = pct.toFixed(1).replace('.', ',') + '% da viagem já passou';
+      $('bar').setAttribute('aria-valuenow', Math.round(pct));
+    }
+
+    // Atualiza azulejos só quando o dia muda
+    const dayIndex = Math.floor(elapsed / DAY);
+    if (dayIndex !== lastDay) {
+      lastDay = dayIndex;
+      tiles.forEach((t, i) => {
+        t.className = 't' + (i < dayIndex ? ' done' : i === dayIndex ? ' today' : '');
+      });
+    }
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(error => {
+        console.error('Não foi possível preparar o app para uso offline:', error);
+      });
+    });
+  }
+</script>
+</body>
+</html>

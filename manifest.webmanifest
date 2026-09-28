@@ -1,0 +1,20 @@
+{
+  "id": "./",
+  "name": "Até a Kau voltar",
+  "short_name": "Até a Kau voltar",
+  "description": "Contagem regressiva para a volta da Kau.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF5F3",
+  "theme_color": "#FFF5F3",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
